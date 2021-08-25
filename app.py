@@ -7,6 +7,7 @@ import tkinter.font as font
 import webbrowser
 import random
 
+from utils.captureImages import CaptureImages 
 
 
 class RegistrationModule:
@@ -82,7 +83,7 @@ class RegistrationModule:
         self.message.place(x=205, y=260)
 
 
-        takeImg = tk.Button(self.window, text="Take Images", fg="white", bg="#363e75", width=15,
+        takeImg = tk.Button(self.window, text="Take Images", fg="white", command=self.collectImagesFromCamera, bg="#363e75", width=15,
                             height=2,
                             activebackground="#118ce1", font=('times', 15, ' bold '))
         takeImg.place(x=80, y=350)
@@ -98,7 +99,7 @@ class RegistrationModule:
                              activebackground="#118ce1", font=('times', 15, ' bold '))
         predictImg.place(x=600, y=350)
 
-        quitWindow = tk.Button(self.window, text="Quit", fg="white", bg="#363e75", width=10, height=2,
+        quitWindow = tk.Button(self.window, text="Quit", command=self.closeWindow, fg="white", bg="#363e75", width=10, height=2,
                                activebackground="#118ce1", font=('times', 15, 'bold'))
         quitWindow.place(x=650, y=510)
 
@@ -107,7 +108,28 @@ class RegistrationModule:
         self.window.mainloop()
 
 
+    def collectImagesFromCamera(self):
+        clientIdVal = (self.clientIDTxt.get())
+        empIDVal = (self.empIDTxt.get())
+        name = (self.empNameTxt.get())
+        ap = argparse.ArgumentParser()
+
+        ap.add_argument("--faces", default=30,help='number of faces that camera will get')
+        ap.add_argument("--output",default="./datasets/train/"+str(clientIdVal) + '_' + str(empIDVal) + '_' + str(name),
+                                help='path to faces output')
+
+        args = vars(ap.parse_args())
+
+        trngDataCollector = CaptureImages(args)
+        trngDataCollector.capture()
+
+        notification = "We have collected " + str(args['faces']) + " images for training."
+        self.message.configure(text=notification)
+
+
+    def closeWindow(self):
+        self.window.destroy()
+
 
 if __name__ == '__main__':
-    register = RegistrationModule('abc.txt')
-    register()
+    register = RegistrationModule('proceduralLog.txt')
