@@ -1,0 +1,9 @@
+NETWORK:
+        BATCH_SIZE: 16
+        EPOCH: 10
+
+DATASET:
+        FOLDER_PATH: './datasets/train'
+
+MODEL:
+        PATH: './utils/model_file/model.onnx'

@@ -8,7 +8,7 @@ import webbrowser
 import random
 
 from utils.captureImages import CaptureImages 
-
+from utils.train import Train
 
 class RegistrationModule:
     def __init__(self,logFileName):
@@ -88,7 +88,7 @@ class RegistrationModule:
                             activebackground="#118ce1", font=('times', 15, ' bold '))
         takeImg.place(x=80, y=350)
 
-        trainImg = tk.Button(self.window, text="Train Images", fg="white", bg="#363e75", width=15,
+        trainImg = tk.Button(self.window, text="Train Images",command=self.trainModel, fg="white", bg="#363e75", width=15,
                              height=2,
                              activebackground="#118ce1", font=('times', 15, ' bold '))
         trainImg.place(x=350, y=350)
@@ -107,6 +107,12 @@ class RegistrationModule:
 
         self.window.mainloop()
 
+    def trainModel(self):
+        trainModel = Train()
+        trainModel.train()
+
+        notification = 'your model is ready now'
+        self.message.configure(text=notification)
 
     def collectImagesFromCamera(self):
         clientIdVal = (self.clientIDTxt.get())
