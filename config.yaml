@@ -7,3 +7,4 @@ DATASET:
 
 MODEL:
         PATH: './utils/model_file/model.onnx'
+        CLASSES: './utils/model_file/classes.txt'

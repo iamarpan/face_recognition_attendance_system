@@ -35,6 +35,10 @@ def read_yaml():
     with open(config_file,"r") as f:
         return yaml.safe_load(f)
 
+def writeTxt(classes):
+    with open(self.class_path,"a") as f:
+        f.write(classes + '\n')
+    return
 
 class Train(nn.Module):
 
@@ -54,12 +58,18 @@ class Train(nn.Module):
         self.folderPath = self.config['DATASET']['FOLDER_PATH']
         self.classes = next(os.walk(self.folderPath))[1]
         self.model_path = self.config['MODEL']['PATH']
+        self.class_path = self.config['MODEL']['CLASSES']
         self.train_set = None
         self.network = None
 
+    def writeTxt(self,classes):
+        with open(self.class_path,"w") as f:
+            f.write(str(classes) + '\n')
+        return
 
     def performETL(self,batch_size):
-        self.train_set = torchvision.datasets.ImageFolder(root=self.folderPath,transform=self.transform)        
+        self.train_set = torchvision.datasets.ImageFolder(root=self.folderPath,transform=self.transform)
+        self.writeTxt(self.train_set.class_to_idx)
         dataloader = torch.utils.data.DataLoader(self.train_set,batch_size=batch_size,shuffle=True)
         return dataloader
 

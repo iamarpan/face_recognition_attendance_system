@@ -9,6 +9,7 @@ import random
 
 from utils.captureImages import CaptureImages 
 from utils.train import Train
+from utils.predict import Prediction
 
 class RegistrationModule:
     def __init__(self,logFileName):
@@ -93,7 +94,7 @@ class RegistrationModule:
                              activebackground="#118ce1", font=('times', 15, ' bold '))
         trainImg.place(x=350, y=350)
 
-        predictImg = tk.Button(self.window, text="Predict", fg="white", bg="#363e75",
+        predictImg = tk.Button(self.window, text="Predict", command=self.predict, fg="white", bg="#363e75",
                              width=15,
                              height=2,
                              activebackground="#118ce1", font=('times', 15, ' bold '))
@@ -113,6 +114,11 @@ class RegistrationModule:
 
         notification = 'your model is ready now'
         self.message.configure(text=notification)
+
+
+    def predict(self):
+        predict = Prediction()
+        predict.predictUser()
 
     def collectImagesFromCamera(self):
         clientIdVal = (self.clientIDTxt.get())
@@ -135,7 +141,7 @@ class RegistrationModule:
 
     def closeWindow(self):
         self.window.destroy()
-
+        
 
 if __name__ == '__main__':
     register = RegistrationModule('proceduralLog.txt')
