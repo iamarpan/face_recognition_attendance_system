@@ -10,6 +10,9 @@ import numpy as np
 from facenet_pytorch import MTCNN
 from PIL import Image
 import ast
+import datetime
+import time 
+import pandas as pd
 config_file = './config.yaml'
 
 
@@ -66,8 +69,7 @@ class Prediction:
             if value == prediction:
                 prediction = key
                 break
-        result = prediction.split("_")[-1]
-        return result
+        return prediction
 
 
     def predictUser(self):
@@ -86,15 +88,28 @@ class Prediction:
                 roi = Image.fromarray(np.uint8(roi)).convert('RGB')
                 roi = self.transform(roi)
                 inference = self._inference(roi)
-                print(prob)
-                text = str(inference) + "  " + str(round(prob[0],4))
+                name = inference.split("_")[-1]
+                if name:
+                    best_inference = inference
+                text = str(name) + "  " + str(round(prob[0],4))
                 frame = self._draw(bbox[0],text,frame)
             cv2.imshow('frame',frame)
             if cv2.waitKey(1) & 0xff==ord('q'):
+                self.attendance(best_inference)
                 break
         cap.release()
         cv2.destroyAllWindows()
 
-
+    def attendance(self,inference):
+        userinfo = inference.split('_')
+        empId = userinfo[0]
+        clientId = userinfo[1]
+        name = userinfo[2]
+        data = pd.read_csv("./utils/Attendance_register.csv")
+        date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        df = pd.DataFrame({'EmployeeId':[empId],'clientId':[clientId],'name':[name],'date':[date]})
+        data = data.append(df,ignore_index=True)
+        data.to_csv('./utils/Attendance_register.csv',index=False)
+        return
 
 
