@@ -9,6 +9,7 @@ import json
 import numpy as np
 from facenet_pytorch import MTCNN
 from PIL import Image
+import ast
 config_file = './config.yaml'
 
 
@@ -52,8 +53,7 @@ class Prediction:
 
     def _inference(self,img):
         session = rt.InferenceSession(self.config['MODEL']['PATH'])
-        classes = read_txt(self.config['MODEL']['CLASSES'])
-        print(classes)
+        classes = ast.literal_eval(read_txt(self.config['MODEL']['CLASSES']))
         input_name = session.get_inputs()[0].name
         output_name = session.get_outputs()[0].name
         img = img.reshape((1,3,224,224))
@@ -61,7 +61,13 @@ class Prediction:
         data = np.array(json.loads(data)['data']).astype('float32')
         result = session.run([output_name],{input_name:data})
         prediction = torch.argmax(F.softmax(torch.from_numpy(np.array(result[0].squeeze())),dim=0),dim=0)
-        return prediction
+        prediction = prediction.item()
+        for key,value in classes.items():
+            if value == prediction:
+                prediction = key
+                break
+        result = prediction.split("_")[-1]
+        return result
 
 
     def predictUser(self):
@@ -81,7 +87,7 @@ class Prediction:
                 roi = self.transform(roi)
                 inference = self._inference(roi)
                 print(prob)
-                text = str(inference)+str(round(prob[0],4))
+                text = str(inference) + "  " + str(round(prob[0],4))
                 frame = self._draw(bbox[0],text,frame)
             cv2.imshow('frame',frame)
             if cv2.waitKey(1) & 0xff==ord('q'):
